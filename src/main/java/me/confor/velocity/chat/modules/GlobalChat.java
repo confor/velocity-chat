@@ -7,6 +7,7 @@ import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult;
+import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -18,10 +19,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GlobalChat {
     private final ProxyServer server;
@@ -38,20 +36,19 @@ public class GlobalChat {
 
     @Subscribe(order = PostOrder.FIRST)
     public void onPlayerChat(PlayerChatEvent event) {
-        Player player = event.getPlayer();
+        String player = event.getPlayer().getUsername();
         String message = event.getMessage();
         String input = config.getString("chat.msg_chat");
-        Boolean parse_chat_msg = config.getBool("chat.parse_player_messages");
 
         Component msg = parseMessage(input, List.of(
-                new ChatTemplate("player", event.getPlayer().getUsername(), false),
-                new ChatTemplate("message", event.getMessage(), parse_chat_msg)
+                new ChatTemplate("player", player, false),
+                new ChatTemplate("message", message, config.getBool("chat.parse_player_messages"))
         ));
 
         if (this.config.getBool("chat.log_to_console"))
-            this.logger.info("GLOBAL: <{}> {}", player.getUsername(), message);
+            this.logger.info("GLOBAL: <{}> {}", player, message);
 
-        this.sendMessage(msg);
+        sendMessage(msg);
 
         if (!this.config.getBool("chat.passthrough")) {
             ChatResult deniedResult = event.getResult().denied(); // is this ok?
@@ -67,7 +64,7 @@ public class GlobalChat {
                 new ChatTemplate("player", event.getPlayer().getUsername(), false)
         ));
 
-        this.sendMessage(msg);
+        sendMessage(msg);
     }
 
     @Subscribe
@@ -78,7 +75,27 @@ public class GlobalChat {
                 new ChatTemplate("player", event.getPlayer().getUsername(), false)
         ));
 
-        this.sendMessage(msg);
+        sendMessage(msg);
+    }
+
+    @Subscribe
+    public void onServerConnect(ServerConnectedEvent event) {
+        RegisteredServer server = event.getServer();
+        Optional<RegisteredServer> oldServer = event.getPreviousServer();
+
+        // if there isn't a previous server, then its the first connection
+        if (oldServer.isEmpty())
+            return;
+
+        String input = config.getString("chat.msg_switch");
+
+        Component msg = parseMessage(input, List.of(
+                new ChatTemplate("player", event.getPlayer().getUsername(), false),
+                new ChatTemplate("server", event.getServer().getServerInfo().getName(), false),
+                new ChatTemplate("oldserver", oldServer.get().getServerInfo().getName(), false)
+        ));
+
+        sendMessage(msg);
     }
 
     private Component parseMessage(String input, List<ChatTemplate> templates) {

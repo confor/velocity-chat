@@ -15,7 +15,7 @@ import java.nio.file.Path;
 public class Config {
     //private final ProxyServer server;
     private final Logger logger;
-    static final long CONFIG_VERSION = 1;
+    static final long CONFIG_VERSION = 2;
 
     Path dataDir;
     Toml toml;

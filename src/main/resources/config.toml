@@ -1,4 +1,4 @@
-config_version = 1
+config_version = 2
 
 [chat]
     # should the chat messages be echoed to velocity's console?
@@ -20,3 +20,6 @@ config_version = 1
 
     # when a player speaks
     msg_chat = "<player>: <message>"
+
+    # shown when a player switches to another minecraft server
+    msg_switch = "<player> disconnected from <oldserver> and joined <server>"

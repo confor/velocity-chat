@@ -8,6 +8,7 @@ I was disappointed with the current options so I made my own plugin. I hope its 
 - **Log to console**: the chat can be sent to your console (configurable, can be disabled)
 - **Configurable format**: chat format can be changed or formatted using MiniMessage tags (or translated!)
 - **Global join/quit messages**: let your whole network know when a player joins or quits the velocity proxy (goes well with [HidePlayerJoinQuit](https://github.com/OskarZyg/HidePlayerJoinQuit/releases) or [SilentJoin](https://www.spigotmc.org/resources/silentjoin.34967/))
+- **Server switch messages**
 
 ## Installation
 Download the jar from GitHub releases (or compile your own) and drop it into your velocity's plugins folder. Restart the server to load a new plugin.
@@ -23,7 +24,6 @@ I'm looking for a new plugin name, I don't really like "chat".
 ## Future fancy features
 I would like to implement these features at some point:
 - Welcome messages (MOTD?)
-- Server switch messages
 - Some command to clear chat
 - Chat disabling (restricting the whole chat)
 - Filter words from chat
