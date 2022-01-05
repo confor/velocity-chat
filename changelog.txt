@@ -2,4 +2,5 @@
 0.0.6.16: configurable message chat format
 0.0.6.17: toggleable parsing for chat messages
 0.0.6.18: start adding server switch messages
-0.0.6.20: add server switch messages, increment config version
+#20: add server switch messages, increment config version
+#21: try to fix minor bug where server switch messages showed up for everyone except the client switching (ServerConnectedEvent -> ServerPostConnectEvent)

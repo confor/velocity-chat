@@ -4,17 +4,14 @@ import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
-import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult;
-import com.velocitypowered.api.event.player.ServerConnectedEvent;
-import com.velocitypowered.api.plugin.annotation.DataDirectory;
-import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import me.confor.velocity.chat.Config;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import org.slf4j.Logger;
@@ -31,7 +28,7 @@ public class GlobalChat {
         this.logger = logger;
         this.config = config;
 
-        logger.info("Enabled global chat");
+        logger.info("Enabled global chat module");
     }
 
     @Subscribe(order = PostOrder.FIRST)
@@ -50,10 +47,8 @@ public class GlobalChat {
 
         sendMessage(msg);
 
-        if (!this.config.getBool("chat.passthrough")) {
-            ChatResult deniedResult = event.getResult().denied(); // is this ok?
-            event.setResult(deniedResult);
-        }
+        if (!this.config.getBool("chat.passthrough"))
+            event.setResult(ChatResult.denied());
     }
 
     @Subscribe
@@ -79,20 +74,20 @@ public class GlobalChat {
     }
 
     @Subscribe
-    public void onServerConnect(ServerConnectedEvent event) {
-        RegisteredServer server = event.getServer();
-        Optional<RegisteredServer> oldServer = event.getPreviousServer();
+    public void onServerConnect(ServerPostConnectEvent event) {
+        Optional<ServerConnection> server = event.getPlayer().getCurrentServer();
+        RegisteredServer oldServer = event.getPreviousServer();
 
         // if there isn't a previous server, then its the first connection
-        if (oldServer.isEmpty())
+        if (server.isEmpty() || oldServer == null) // why are some fields @Nullable and others Optional<T>?
             return;
 
         String input = config.getString("chat.msg_switch");
 
         Component msg = parseMessage(input, List.of(
                 new ChatTemplate("player", event.getPlayer().getUsername(), false),
-                new ChatTemplate("server", event.getServer().getServerInfo().getName(), false),
-                new ChatTemplate("oldserver", oldServer.get().getServerInfo().getName(), false)
+                new ChatTemplate("server", server.get().getServerInfo().getName(), false),
+                new ChatTemplate("oldserver", oldServer.getServerInfo().getName(), false)
         ));
 
         sendMessage(msg);
@@ -117,9 +112,9 @@ public class GlobalChat {
     }
 
     class ChatTemplate {
-        String name;
-        String value;
-        Boolean parse; // should we run through minimessage's parsing?
+        final String name;
+        final String value;
+        final Boolean parse; // should we run through minimessage's parsing?
 
         public ChatTemplate(String name, String value, Boolean shouldParse) {
             this.name = name;
