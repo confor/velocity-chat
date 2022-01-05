@@ -1,0 +1,96 @@
+plugins {
+    id 'java'
+    id 'eclipse'
+    id "org.jetbrains.gradle.plugin.idea-ext" version "1.0.1"
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+def versionPropsFile = file('version.properties')
+def versionBuild = 6
+
+if (!versionPropsFile.canRead())
+    throw new FileNotFoundException("Could not read version.properties")
+
+def Properties versionProps = new Properties()
+versionProps.load(new FileInputStream(versionPropsFile))
+versionBuild = versionProps['BUILD'].toInteger()
+
+group = 'me.confor.velocity'
+version = '0.0.6.' + versionBuild
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'velocitypowered-repo'
+        url = 'https://nexus.velocitypowered.com/repository/maven-public/'
+    }
+}
+
+dependencies {
+    compileOnly 'com.velocitypowered:velocity-api:3.1.0'
+    annotationProcessor 'com.velocitypowered:velocity-api:3.1.0'
+
+    // templating dependency
+    implementation "net.kyori:adventure-api:4.9.3"
+    implementation "net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT"
+}
+
+def targetJavaVersion = 11
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
+def templateSource = file('src/main/templates')
+def templateDest = layout.buildDirectory.dir('generated/sources/templates')
+def generateTemplates = tasks.register('generateTemplates', Copy) { task ->
+    def props = [
+            'version': project.version
+    ]
+    task.inputs.properties props
+
+    task.from templateSource
+    task.into templateDest
+    task.expand props
+}
+
+sourceSets.main.java.srcDir(generateTemplates.map { it.outputs })
+
+rootProject.idea.project.settings.taskTriggers.afterSync generateTemplates
+project.eclipse.synchronizationTasks(generateTemplates)
+
+void autoIncrementBuildNumber() {
+    def versionPropsFile = file('version.properties')
+    def versionBuild = 6
+
+    if (!versionPropsFile.canWrite())
+        throw new FileNotFoundException("Could not read+write version.properties") // filenotfound??
+
+    def Properties versionProps = new Properties()
+    versionProps.load(new FileInputStream(versionPropsFile))
+    versionBuild = versionProps['BUILD'].toInteger()
+    versionBuild = versionBuild + 1
+    versionProps["BUILD"] = versionBuild.toString()
+    versionProps.store(versionPropsFile.newWriter(), null)
+}
+
+gradle.taskGraph.whenReady {taskGraph ->
+    if (taskGraph.hasTask(build) || taskGraph.hasTask(shadowJar))
+        autoIncrementBuildNumber()
+}
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': 'me.confor.velocity.chat.Plugin'
+    }
+}
