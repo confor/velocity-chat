@@ -51,8 +51,10 @@ public class Config {
 
         // make sure the config makes sense for the current plugin's version
         long version = this.toml.getLong("config_version", 0L);
-        if (version != CONFIG_VERSION)
-            logger.warn("WARNING: config.toml uses an unknown version number (!= " + CONFIG_VERSION + ")");
+        if (version != CONFIG_VERSION) {
+            logger.error("ERROR: config.toml uses an unknown version number (!= " + CONFIG_VERSION + ")");
+            throw new RuntimeException("Can't use the existing configuration file: version mismatch (intended for another, older version?)");
+        }
     }
 
     public Boolean getBool(String key) {
