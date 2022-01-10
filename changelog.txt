@@ -6,4 +6,4 @@
 #21: try to fix minor bug where server switch messages showed up for everyone except the client switching (ServerConnectedEvent -> ServerPostConnectEvent)
 #22: show server switch messages if player was kicked and velocity has a fallback server
 #23: crash plugin when configuration uses an unknown version
-
+#24: rework configuration

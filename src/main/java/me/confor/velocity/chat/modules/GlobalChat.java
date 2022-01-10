@@ -29,36 +29,39 @@ public class GlobalChat {
         this.server = server;
         this.logger = logger;
         this.config = config;
-
-        logger.info("Enabled global chat module");
     }
 
     @Subscribe(order = PostOrder.FIRST)
     public void onPlayerChat(PlayerChatEvent event) {
+        if (!config.GLOBAL_CHAT_ENABLED)
+            return;
+
         String player = event.getPlayer().getUsername();
         String message = event.getMessage();
-        String input = config.getString("chat.msg_chat");
 
-        Component msg = parseMessage(input, List.of(
+        Component msg = parseMessage(config.GLOBAL_CHAT_FORMAT, List.of(
                 new ChatTemplate("player", player, false),
-                new ChatTemplate("message", message, config.getBool("chat.parse_player_messages"))
+                new ChatTemplate("message", message, config.GLOBAL_CHAT_ALLOW_MSG_FORMATTING)
         ));
-
-        if (this.config.getBool("chat.log_to_console"))
-            this.logger.info("GLOBAL: <{}> {}", player, message);
 
         sendMessage(msg);
 
-        if (!this.config.getBool("chat.passthrough"))
+        if (config.GLOBAL_CHAT_TO_CONSOLE)
+            this.logger.info("GLOBAL: <{}> {}", player, message);
+
+        if (!config.GLOBAL_CHAT_PASSTHROUGH)
             event.setResult(ChatResult.denied());
     }
 
     @Subscribe
     public void onConnect(LoginEvent event) {
-        String input = config.getString("chat.msg_join");
+        if (!config.JOIN_ENABLE)
+            return;
 
-        Component msg = parseMessage(input, List.of(
-                new ChatTemplate("player", event.getPlayer().getUsername(), false)
+        String player = event.getPlayer().getUsername();
+
+        Component msg = parseMessage(config.JOIN_FORMAT, List.of(
+                new ChatTemplate("player", player, false)
         ));
 
         sendMessage(msg);
@@ -66,10 +69,13 @@ public class GlobalChat {
 
     @Subscribe
     public void onDisconnect(DisconnectEvent event) {
-        String input = config.getString("chat.msg_quit");
+        if (!config.QUIT_ENABLE)
+            return;
 
-        Component msg = parseMessage(input, List.of(
-                new ChatTemplate("player", event.getPlayer().getUsername(), false)
+        String player = event.getPlayer().getUsername();
+
+        Component msg = parseMessage(config.QUIT_FORMAT, List.of(
+                new ChatTemplate("player", player, false)
         ));
 
         sendMessage(msg);
@@ -77,16 +83,20 @@ public class GlobalChat {
 
     @Subscribe
     public void onServerConnect(ServerPostConnectEvent event) {
-        Optional<ServerConnection> server = event.getPlayer().getCurrentServer(); // why Optional?
-
-        if (server.isEmpty())
+        if (!config.SWITCH_ENABLE)
             return;
 
-        String input = config.getString("chat.msg_switch");
+        Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer(); // why Optional?
 
-        Component msg = parseMessage(input, List.of(
-                new ChatTemplate("player", event.getPlayer().getUsername(), false),
-                new ChatTemplate("server", server.get().getServerInfo().getName(), false)
+        if (currentServer.isEmpty())
+            return;
+
+        String player = event.getPlayer().getUsername();
+        String server = currentServer.get().getServerInfo().getName();
+
+        Component msg = parseMessage(config.SWITCH_FORMAT, List.of(
+                new ChatTemplate("player", player, false),
+                new ChatTemplate("server", server, false)
         ));
 
         sendMessage(msg);

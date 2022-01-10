@@ -29,7 +29,7 @@ public class Plugin {
         this.logger = logger;
 
         logger.info("Loading plugin...");
-        this.config = new Config(server, logger, dataDirectory);
+        this.config = new Config(dataDirectory);
     }
 
     @Subscribe

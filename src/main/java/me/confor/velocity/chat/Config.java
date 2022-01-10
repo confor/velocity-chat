@@ -13,20 +13,35 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Config {
-    //private final ProxyServer server;
-    private final Logger logger;
-    static final long CONFIG_VERSION = 2;
+    static final long CONFIG_VERSION = 3;
 
     Path dataDir;
     Toml toml;
 
+    // is there a less ugly way of doing this?
+    // defaults are set in loadConfigs()
+
+    public boolean GLOBAL_CHAT_ENABLED;
+    public boolean GLOBAL_CHAT_TO_CONSOLE;
+    public boolean GLOBAL_CHAT_PASSTHROUGH;
+    public boolean GLOBAL_CHAT_ALLOW_MSG_FORMATTING;
+    public String GLOBAL_CHAT_FORMAT;
+
+    public boolean JOIN_ENABLE;
+    public String JOIN_FORMAT;
+
+    public boolean QUIT_ENABLE;
+    public String QUIT_FORMAT;
+
+    public boolean SWITCH_ENABLE;
+    public String SWITCH_FORMAT;
+
     @Inject
-    public Config(ProxyServer server, Logger logger, @DataDirectory Path dataDir) {
-        //this.server = server;
-        this.logger = logger;
+    public Config(@DataDirectory Path dataDir) {
         this.dataDir = dataDir;
 
         loadFile();
+        loadConfigs();
     }
 
     private void loadFile() {
@@ -42,8 +57,7 @@ public class Config {
                 InputStream in = this.getClass().getResourceAsStream("/config.toml");
                 Files.copy(in, dataFile.toPath());
             } catch (IOException e) {
-                logger.error("Can't write default configuration file, filesystem/permissions error?");
-                throw new RuntimeException("Can't write config");
+                throw new RuntimeException("ERROR: Can't write default configuration file (permissions/filesystem error?)");
             }
         }
 
@@ -52,16 +66,24 @@ public class Config {
         // make sure the config makes sense for the current plugin's version
         long version = this.toml.getLong("config_version", 0L);
         if (version != CONFIG_VERSION) {
-            logger.error("ERROR: config.toml uses an unknown version number (!= " + CONFIG_VERSION + ")");
-            throw new RuntimeException("Can't use the existing configuration file: version mismatch (intended for another, older version?)");
+            throw new RuntimeException("ERROR: Can't use the existing configuration file: version mismatch (intended for another, older version?)");
         }
     }
 
-    public Boolean getBool(String key) {
-        return this.toml.getBoolean(key);
-    }
+    public void loadConfigs() {
+        this.GLOBAL_CHAT_ENABLED = this.toml.getBoolean("chat.enable", true);
+        this.GLOBAL_CHAT_TO_CONSOLE = this.toml.getBoolean("chat.log_to_console", false);
+        this.GLOBAL_CHAT_PASSTHROUGH = this.toml.getBoolean("chat.passthrough", false);
+        this.GLOBAL_CHAT_ALLOW_MSG_FORMATTING = this.toml.getBoolean("chat.parse_player_messages", false);
+        this.GLOBAL_CHAT_FORMAT = this.toml.getString("chat.format", "<player>: <message>");
 
-    public String getString(String key) {
-        return this.toml.getString(key);
+        this.JOIN_ENABLE = this.toml.getBoolean("join.enable", true);
+        this.JOIN_FORMAT = this.toml.getString("join.format", "<player> connected");
+
+        this.QUIT_ENABLE = this.toml.getBoolean("quit.enable", true);
+        this.QUIT_FORMAT = this.toml.getString("quit.format", "<player> disconnected");
+
+        this.SWITCH_ENABLE = this.toml.getBoolean("switch.enable", true);
+        this.SWITCH_FORMAT = this.toml.getString("switch.format", "<player> moved to <server>");
     }
 }
