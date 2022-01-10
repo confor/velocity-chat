@@ -13,13 +13,13 @@ config_version = 2
     parse_player_messages = false
 
     # when a player connects to velocity
-    msg_join = "<gold><player> connected</gold>"
+    msg_join = "<yellow><player> connected</yellow>"
 
     # when a player disconnects from velocity
-    msg_quit = "<gold><player> disconnected</gold>"
+    msg_quit = "<yellow><player> disconnected</yellow>"
 
     # when a player speaks
     msg_chat = "<player>: <message>"
 
     # shown when a player switches to another minecraft server
-    msg_switch = "<player> disconnected from <oldserver> and joined <server>"
+    msg_switch = "<yellow><player> moved to <server></yellow>"

@@ -16,7 +16,9 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class GlobalChat {
     private final ProxyServer server;
@@ -75,19 +77,16 @@ public class GlobalChat {
 
     @Subscribe
     public void onServerConnect(ServerPostConnectEvent event) {
-        Optional<ServerConnection> server = event.getPlayer().getCurrentServer();
-        RegisteredServer oldServer = event.getPreviousServer();
+        Optional<ServerConnection> server = event.getPlayer().getCurrentServer(); // why Optional?
 
-        // if there isn't a previous server, then its the first connection
-        if (server.isEmpty() || oldServer == null) // why are some fields @Nullable and others Optional<T>?
+        if (server.isEmpty())
             return;
 
         String input = config.getString("chat.msg_switch");
 
         Component msg = parseMessage(input, List.of(
                 new ChatTemplate("player", event.getPlayer().getUsername(), false),
-                new ChatTemplate("server", server.get().getServerInfo().getName(), false),
-                new ChatTemplate("oldserver", oldServer.getServerInfo().getName(), false)
+                new ChatTemplate("server", server.get().getServerInfo().getName(), false)
         ));
 
         sendMessage(msg);
@@ -111,7 +110,7 @@ public class GlobalChat {
             server.sendMessage(msg);
     }
 
-    class ChatTemplate {
+    static final class ChatTemplate {
         final String name;
         final String value;
         final Boolean parse; // should we run through minimessage's parsing?
