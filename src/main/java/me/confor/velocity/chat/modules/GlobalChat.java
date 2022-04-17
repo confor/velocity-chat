@@ -13,7 +13,8 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import me.confor.velocity.chat.Config;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -103,16 +104,18 @@ public class GlobalChat {
     }
 
     private Component parseMessage(String input, List<ChatTemplate> templates) {
-        List<Template> list = new ArrayList<>();
+        List<TagResolver> list = new ArrayList<>();
+
+        list.add(TagResolver.standard());
 
         for (ChatTemplate tmpl : templates) {
             if (tmpl.parse)
-                list.add(Template.of(tmpl.name, tmpl.value));
+                list.add(Placeholder.parsed(tmpl.name, tmpl.value));
             else
-                list.add(Template.of(tmpl.name, Component.text(tmpl.value)));
+                list.add(Placeholder.unparsed(tmpl.name, tmpl.value));
         }
 
-        return MiniMessage.get().parse(input, list);
+        return MiniMessage.miniMessage().deserialize(input, TagResolver.resolver(list));
     }
 
     private void sendMessage(Component msg) {
