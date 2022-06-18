@@ -19,8 +19,8 @@ parse_player_messages = false
 format = "<<player>> <message>"
 
 [join]
-# send a chat message when a player connects to velocity?
-enable = true
+# send a chat message when a player connects to velocity? Useful for fabric servers which dont already have a Join message.
+enable = false
 format = "<yellow><player> joined the game</yellow>"
 
 [quit]

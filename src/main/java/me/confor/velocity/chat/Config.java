@@ -77,7 +77,7 @@ public class Config {
         this.GLOBAL_CHAT_ALLOW_MSG_FORMATTING = this.toml.getBoolean("chat.parse_player_messages", false);
         this.GLOBAL_CHAT_FORMAT = this.toml.getString("chat.format", "<<player>> <message>");
 
-        this.JOIN_ENABLE = this.toml.getBoolean("join.enable", true);
+        this.JOIN_ENABLE = this.toml.getBoolean("join.enable", false);
         this.JOIN_FORMAT = this.toml.getString("join.format", "<yellow><player> joined the game</yellow>");
 
         this.QUIT_ENABLE = this.toml.getBoolean("quit.enable", true);
