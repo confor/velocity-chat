@@ -1,34 +1,34 @@
-config_version = 3
+config_version = 4
 
 [chat]
-    # enable global chat?
-    enable = true
+# enable global chat?
+enable = true
 
-    # should the chat messages be echoed to velocity's console?
-    log_to_console = false
+# should the chat messages be echoed to velocity's console?
+log_to_console = false
 
-    # should chat messages be passed through to the minecraft server?
-    # if enabled, it will show duplicate messages in the senders chat
-    passthrough = false
+# should chat messages be passed through to the minecraft server?
+# if enabled, it will show duplicate messages in the senders chat
+passthrough = true
 
-    # should chat messages be parsed through minimessage?
-    # player will be able to use styles such as <rainbow>hello</rainbow> in their messages
-    parse_player_messages = false
+# should chat messages be parsed through minimessage?
+# player will be able to use styles such as <rainbow>hello</rainbow> in their messages
+parse_player_messages = false
 
-    # global chat format, you can use minimessage tags here.
-    format = "<player>: <message>"
+# global chat format, you can use minimessage tags here.
+format = "<<player>> <message>"
 
 [join]
-    # send a chat message when a player connects to velocity?
-    enable = true
-    format = "<yellow><player> connected</yellow>"
+# send a chat message when a player connects to velocity?
+enable = true
+format = "<yellow><player> joined the game</yellow>"
 
 [quit]
-    # send a chat message when a player disconnects?
-    enable = true
-    format = "<yellow><player> disconnected</yellow>"
+# send a chat message when a player disconnects?
+enable = true
+format = "<yellow><player> disconnected from <server></yellow>"
 
 [switch]
-    # send a chat message when a player connects to a minecraft server?
-    enable = true
-    format = "<yellow><player> moved to <server></yellow>"
+# send a chat message when a player connects to a minecraft server?
+enable = true
+format = "<yellow><player> connected to <server></yellow>"

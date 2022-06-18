@@ -1,6 +1,7 @@
 package me.confor.velocity.chat.modules;
 
 import com.velocitypowered.api.event.PostOrder;
+import com.velocitypowered.api.event.ResultedEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
@@ -69,22 +70,13 @@ public class GlobalChat {
         if (!config.JOIN_ENABLE)
             return;
 
-        Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer();
-        if (currentServer.isEmpty())
-            return;
-
         String player = event.getPlayer().getUsername();
-        String server = currentServer.get().getServerInfo().getName();
 
         Component msg = parseMessage(config.JOIN_FORMAT, List.of(
-                new ChatTemplate("player", player, false),
-                new ChatTemplate("server", server, false)
+                new ChatTemplate("player", player, false)
         ));
 
-        if (config.GLOBAL_CHAT_PASSTHROUGH)
-            sendMessage(msg,currentServer.get().getServer());
-        else
-            sendMessage(msg);
+        sendMessage(msg);
     }
 
     @Subscribe
