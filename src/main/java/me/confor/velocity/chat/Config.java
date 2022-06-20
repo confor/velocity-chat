@@ -13,7 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Config {
-    static final long CONFIG_VERSION = 3;
+    static final long CONFIG_VERSION = 4;
 
     Path dataDir;
     Toml toml;
@@ -73,17 +73,17 @@ public class Config {
     public void loadConfigs() {
         this.GLOBAL_CHAT_ENABLED = this.toml.getBoolean("chat.enable", true);
         this.GLOBAL_CHAT_TO_CONSOLE = this.toml.getBoolean("chat.log_to_console", false);
-        this.GLOBAL_CHAT_PASSTHROUGH = this.toml.getBoolean("chat.passthrough", false);
+        this.GLOBAL_CHAT_PASSTHROUGH = this.toml.getBoolean("chat.passthrough", true);
         this.GLOBAL_CHAT_ALLOW_MSG_FORMATTING = this.toml.getBoolean("chat.parse_player_messages", false);
-        this.GLOBAL_CHAT_FORMAT = this.toml.getString("chat.format", "<player>: <message>");
+        this.GLOBAL_CHAT_FORMAT = this.toml.getString("chat.format", "<<player>> <message>");
 
-        this.JOIN_ENABLE = this.toml.getBoolean("join.enable", true);
-        this.JOIN_FORMAT = this.toml.getString("join.format", "<player> connected");
+        this.JOIN_ENABLE = this.toml.getBoolean("join.enable", false);
+        this.JOIN_FORMAT = this.toml.getString("join.format", "<yellow><player> joined the game</yellow>");
 
         this.QUIT_ENABLE = this.toml.getBoolean("quit.enable", true);
-        this.QUIT_FORMAT = this.toml.getString("quit.format", "<player> disconnected");
+        this.QUIT_FORMAT = this.toml.getString("quit.format", "<yellow><player> disconnected from <server></yellow>");
 
         this.SWITCH_ENABLE = this.toml.getBoolean("switch.enable", true);
-        this.SWITCH_FORMAT = this.toml.getString("switch.format", "<player> moved to <server>");
+        this.SWITCH_FORMAT = this.toml.getString("switch.format", "<yellow><player> connected to <server></yellow>");
     }
 }

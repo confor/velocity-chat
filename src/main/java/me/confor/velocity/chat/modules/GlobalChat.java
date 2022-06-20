@@ -1,6 +1,7 @@
 package me.confor.velocity.chat.modules;
 
 import com.velocitypowered.api.event.PostOrder;
+import com.velocitypowered.api.event.ResultedEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
@@ -13,7 +14,9 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import me.confor.velocity.chat.Config;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -36,15 +39,24 @@ public class GlobalChat {
         if (!config.GLOBAL_CHAT_ENABLED)
             return;
 
+        Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer();
+        if (currentServer.isEmpty())
+            return;
+
         String player = event.getPlayer().getUsername();
+        String server = currentServer.get().getServerInfo().getName();
         String message = event.getMessage();
 
         Component msg = parseMessage(config.GLOBAL_CHAT_FORMAT, List.of(
                 new ChatTemplate("player", player, false),
+                new ChatTemplate("server", server, false),
                 new ChatTemplate("message", message, config.GLOBAL_CHAT_ALLOW_MSG_FORMATTING)
         ));
 
-        sendMessage(msg);
+        if (config.GLOBAL_CHAT_PASSTHROUGH)
+            sendMessage(msg,currentServer.get().getServer());
+        else
+            sendMessage(msg);
 
         if (config.GLOBAL_CHAT_TO_CONSOLE)
             this.logger.info("GLOBAL: <{}> {}", player, message);
@@ -72,13 +84,22 @@ public class GlobalChat {
         if (!config.QUIT_ENABLE)
             return;
 
+        Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer();
+        if (currentServer.isEmpty())
+            return;
+
         String player = event.getPlayer().getUsername();
+        String server = currentServer.get().getServerInfo().getName();
 
         Component msg = parseMessage(config.QUIT_FORMAT, List.of(
-                new ChatTemplate("player", player, false)
+                new ChatTemplate("player", player, false),
+                new ChatTemplate("server", server, false)
         ));
 
-        sendMessage(msg);
+        if (config.GLOBAL_CHAT_PASSTHROUGH)
+            sendMessage(msg,currentServer.get().getServer());
+        else
+            sendMessage(msg);
     }
 
     @Subscribe
@@ -86,8 +107,7 @@ public class GlobalChat {
         if (!config.SWITCH_ENABLE)
             return;
 
-        Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer(); // why Optional?
-
+        Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer();
         if (currentServer.isEmpty())
             return;
 
@@ -99,25 +119,35 @@ public class GlobalChat {
                 new ChatTemplate("server", server, false)
         ));
 
-        sendMessage(msg);
+        if (config.GLOBAL_CHAT_PASSTHROUGH)
+            sendMessage(msg,currentServer.get().getServer());
+        else
+            sendMessage(msg);
     }
 
     private Component parseMessage(String input, List<ChatTemplate> templates) {
-        List<Template> list = new ArrayList<>();
+        List<TagResolver.Single> list = new ArrayList<>();
 
         for (ChatTemplate tmpl : templates) {
             if (tmpl.parse)
-                list.add(Template.of(tmpl.name, tmpl.value));
+                list.add(Placeholder.parsed(tmpl.name, tmpl.value));
             else
-                list.add(Template.of(tmpl.name, Component.text(tmpl.value)));
+                list.add(Placeholder.parsed(tmpl.name, Component.text(tmpl.value).content()));
         }
 
-        return MiniMessage.get().parse(input, list);
+        return MiniMessage.miniMessage().deserialize(input, list.toArray(TagResolver[]::new));
     }
 
     private void sendMessage(Component msg) {
         for (RegisteredServer server : this.server.getAllServers())
             server.sendMessage(msg);
+    }
+
+    private void sendMessage(Component msg, RegisteredServer currentServer) {
+        for (RegisteredServer server : this.server.getAllServers())
+            if (server != currentServer) {
+                server.sendMessage(msg);
+            }
     }
 
     static final class ChatTemplate {
