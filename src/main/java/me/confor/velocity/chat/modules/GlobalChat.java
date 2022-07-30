@@ -7,6 +7,7 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult;
+import com.velocitypowered.api.event.proxy.ProxyReloadEvent;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
@@ -19,6 +20,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.slf4j.Logger;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,12 +28,20 @@ import java.util.Optional;
 public class GlobalChat {
     private final ProxyServer server;
     private final Logger logger;
-    private final Config config;
+    private final Path dataDirectory;
+    private Config config;
 
-    public GlobalChat(ProxyServer server, Logger logger, Config config) {
+    public GlobalChat(ProxyServer server, Logger logger, Path dataDirectory) {
         this.server = server;
         this.logger = logger;
-        this.config = config;
+        this.dataDirectory = dataDirectory;
+
+        this.config = new Config(dataDirectory);
+    }
+
+    @Subscribe
+    public void onProxyReload(ProxyReloadEvent event) {
+        this.config = new Config(this.dataDirectory);
     }
 
     @Subscribe(order = PostOrder.FIRST)
