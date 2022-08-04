@@ -14,7 +14,7 @@ I was disappointed with the current options so I made my own plugin. I hope its 
 Download the jar from GitHub releases (or compile your own) and drop it into your velocity's plugins folder. Restart the server to load a new plugin.
 
 ## Configuration
-See `chat/config.toml` in your server's plugins folder. You need to restart for settings to take effect.
+See `chat/config.toml` in your server's plugins folder. You can reload the proxy for settings to take effect.
 
 Messages support MiniMessage tags, read [this documentation](https://docs.adventure.kyori.net/minimessage#the-components) for more info.
 
