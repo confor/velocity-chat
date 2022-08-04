@@ -20,8 +20,7 @@ public class Plugin {
 
     private final ProxyServer server;
     private final Logger logger;
-
-    Config config;
+    private final Path dataDirectory;
 
     @Inject
     public Plugin(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
@@ -29,12 +28,12 @@ public class Plugin {
         this.logger = logger;
 
         logger.info("Loading plugin...");
-        this.config = new Config(dataDirectory);
+        this.dataDirectory = dataDirectory;
     }
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        this.register(new GlobalChat(this.server, this.logger, this.config));
+        this.register(new GlobalChat(this.server, this.logger, this.dataDirectory));
     }
 
     private void register(Object x) {
