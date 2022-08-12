@@ -5,17 +5,8 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
-def versionPropsFile = file('version.properties')
-
-if (!versionPropsFile.canRead())
-    throw new FileNotFoundException('Could not read version.properties')
-
-def Properties versionProps = new Properties()
-versionProps.load(new FileInputStream(versionPropsFile))
-def versionBuild = versionProps['BUILD'].toInteger()
-
 group = 'me.confor.velocity'
-version = '0.0.6.' + versionBuild
+version = '0.1.0'
 
 repositories {
     mavenCentral()
@@ -71,26 +62,6 @@ sourceSets.main.java.srcDir(generateTemplates.map { it.outputs })
 
 rootProject.idea.project.settings.taskTriggers.afterSync generateTemplates
 project.eclipse.synchronizationTasks(generateTemplates)
-
-void autoIncrementBuildNumber() {
-    def versionPropsFile = file('version.properties')
-    def versionBuild = 6
-
-    if (!versionPropsFile.canWrite())
-        throw new FileNotFoundException('Could not read+write version.properties') // filenotfound??
-
-    def Properties versionProps = new Properties()
-    versionProps.load(new FileInputStream(versionPropsFile))
-    versionBuild = versionProps['BUILD'].toInteger()
-    versionBuild = versionBuild + 1
-    versionProps['BUILD'] = versionBuild.toString()
-    versionProps.store(versionPropsFile.newWriter(), null)
-}
-
-gradle.taskGraph.whenReady {taskGraph ->
-    if (taskGraph.hasTask(build) || taskGraph.hasTask(shadowJar))
-        autoIncrementBuildNumber()
-}
 
 shadowJar {
     manifest {
