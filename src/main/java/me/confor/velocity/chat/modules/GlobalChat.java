@@ -1,7 +1,6 @@
 package me.confor.velocity.chat.modules;
 
 import com.velocitypowered.api.event.PostOrder;
-import com.velocitypowered.api.event.ResultedEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
@@ -62,6 +61,9 @@ public class GlobalChat {
                 new ChatTemplate("server", server, false),
                 new ChatTemplate("message", message, config.GLOBAL_CHAT_ALLOW_MSG_FORMATTING)
         ));
+
+        if (config.URLS_CLICKABLE)
+            msg = msg.replaceText(config.urlReplacement);
 
         if (config.GLOBAL_CHAT_PASSTHROUGH)
             sendMessage(msg,currentServer.get().getServer());

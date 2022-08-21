@@ -18,6 +18,13 @@ parse_player_messages = false
 # global chat format, you can use minimessage tags here.
 format = "<<player>> <message>"
 
+[urls]
+# should urls typed in chat be clickable?
+clickable = true
+# the regular expression used to determine whether something is a url
+# test using https://regex101.com/ set to Java 8 and only the "g" (global) flag
+pattern = "https?:\\/\\/\\S+"
+
 [join]
 # send a chat message when a player connects to velocity? Useful for fabric servers which dont already have a Join message.
 enable = false
