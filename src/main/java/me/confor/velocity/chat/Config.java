@@ -3,14 +3,15 @@ package me.confor.velocity.chat;
 import com.google.inject.Inject;
 import com.moandjiezana.toml.Toml;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
-import com.velocitypowered.api.proxy.ProxyServer;
-import org.slf4j.Logger;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.event.ClickEvent;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.regex.Pattern;
 
 public class Config {
     static final long CONFIG_VERSION = 4;
@@ -27,6 +28,10 @@ public class Config {
     public boolean GLOBAL_CHAT_ALLOW_MSG_FORMATTING;
     public String GLOBAL_CHAT_FORMAT;
 
+    public boolean URLS_CLICKABLE;
+    public String URLS_PATTERN;
+    public TextReplacementConfig urlReplacement;
+
     public boolean JOIN_ENABLE;
     public String JOIN_FORMAT;
 
@@ -42,6 +47,11 @@ public class Config {
 
         loadFile();
         loadConfigs();
+
+        this.urlReplacement = TextReplacementConfig.builder()
+                .match(Pattern.compile(this.URLS_PATTERN))
+                .replacement(text -> text.clickEvent(ClickEvent.openUrl(text.content())))
+                .build();
     }
 
     private void loadFile() {
@@ -76,6 +86,9 @@ public class Config {
         this.GLOBAL_CHAT_PASSTHROUGH = this.toml.getBoolean("chat.passthrough", true);
         this.GLOBAL_CHAT_ALLOW_MSG_FORMATTING = this.toml.getBoolean("chat.parse_player_messages", false);
         this.GLOBAL_CHAT_FORMAT = this.toml.getString("chat.format", "<<player>> <message>");
+
+        this.URLS_CLICKABLE = this.toml.getBoolean("urls.clickable", true);
+        this.URLS_PATTERN = this.toml.getString("urls.pattern", "https?:\\/\\/\\S+");
 
         this.JOIN_ENABLE = this.toml.getBoolean("join.enable", false);
         this.JOIN_FORMAT = this.toml.getString("join.format", "<yellow><player> joined the game</yellow>");
