@@ -91,12 +91,12 @@ public class Config {
         this.URLS_PATTERN = this.toml.getString("urls.pattern", "https?:\\/\\/\\S+");
 
         this.JOIN_ENABLE = this.toml.getBoolean("join.enable", false);
-        this.JOIN_FORMAT = this.toml.getString("join.format", "<yellow><player> joined the game</yellow>");
+        this.JOIN_FORMAT = this.toml.getString("join.format", "<yellow><player> joined <server></yellow>");
 
         this.QUIT_ENABLE = this.toml.getBoolean("quit.enable", true);
         this.QUIT_FORMAT = this.toml.getString("quit.format", "<yellow><player> disconnected from <server></yellow>");
 
         this.SWITCH_ENABLE = this.toml.getBoolean("switch.enable", true);
-        this.SWITCH_FORMAT = this.toml.getString("switch.format", "<yellow><player> connected to <server></yellow>");
+        this.SWITCH_FORMAT = this.toml.getString("switch.format", "<yellow><player> moved from <previous_server> to <server></yellow>");
     }
 }

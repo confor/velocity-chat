@@ -28,7 +28,7 @@ pattern = "https?:\\/\\/\\S+"
 [join]
 # send a chat message when a player connects to velocity? Useful for fabric servers which dont already have a Join message.
 enable = false
-format = "<yellow><player> joined the game</yellow>"
+format = "<yellow><player> joined <server></yellow>"
 
 [quit]
 # send a chat message when a player disconnects?
@@ -38,4 +38,4 @@ format = "<yellow><player> disconnected from <server></yellow>"
 [switch]
 # send a chat message when a player connects to a minecraft server?
 enable = true
-format = "<yellow><player> connected to <server></yellow>"
+format = "<yellow><player> switched from <previous_server> to <server></yellow>"
