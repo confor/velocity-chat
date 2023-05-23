@@ -7,26 +7,34 @@ enable = true
 # should the chat messages be echoed to velocity's console?
 log_to_console = false
 
-# should chat messages be passed through to the minecraft server?
-# if enabled, it will show duplicate messages in the senders chat
-passthrough = true
+# should global chat messages (with the formatting below)
+#   be sent to all players, regardless of minecraft server?
+# if enabled, both the original message and the message
+#   sent globally will appear on the minecraft server
+#   that the message originates from.
+# if disabled, the origin minecraft server will only see
+#   the original message.
+# players on other minecraft servers will always only see
+#   the global message.
+passthrough = false
 
-# should chat messages be parsed through minimessage?
-# player will be able to use styles such as <rainbow>hello</rainbow> in their messages
+# should global chat messages be parsed through minimessage?
+# players will be able to use styles such as <rainbow>hello</rainbow> in their messages
 parse_player_messages = false
 
-# global chat format, you can use minimessage tags here.
+# global chat format, you can use minimessage tags here
 format = "<<player>> <message>"
 
 [urls]
-# should urls typed in chat be clickable?
+# should urls in global chat be clickable?
 clickable = true
 # the regular expression used to determine whether something is a url
-# test using https://regex101.com/ set to Java 8 and only the "g" (global) flag
+# test using https://regex101.com/ - set to Java 8 and enable only the "g" (global) flag
 pattern = "https?:\\/\\/\\S+"
 
 [join]
-# send a chat message when a player connects to velocity? Useful for fabric servers which dont already have a Join message.
+# send a chat message when a player connects to the proxy?
+# useful for servers that already don't have a join message (via mod / plugin)
 enable = false
 format = "<yellow><player> joined <server></yellow>"
 
@@ -36,6 +44,7 @@ enable = true
 format = "<yellow><player> disconnected from <server></yellow>"
 
 [switch]
-# send a chat message when a player connects to a minecraft server?
+# send a chat message when a player switches to a different minecraft server?
+# (e.g. via "/server <server>")
 enable = true
 format = "<yellow><player> switched from <previous_server> to <server></yellow>"
