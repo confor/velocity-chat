@@ -93,7 +93,7 @@ public class GlobalChat {
             msg = parseMessage(config.SWITCH_FORMAT, List.of(
                 new ChatTemplate("player", player, false),
                 new ChatTemplate("server", server, false),
-                new ChatTemplate("previous_server", previousServer.toString(), false)
+                new ChatTemplate("previous_server", previousServer.get().getServerInfo().getName(), false)
             ));
 
             if (config.GLOBAL_CHAT_PASSTHROUGH) {
