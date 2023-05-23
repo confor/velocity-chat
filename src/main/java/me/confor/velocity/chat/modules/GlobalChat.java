@@ -64,9 +64,9 @@ public class GlobalChat {
             msg = msg.replaceText(config.urlReplacement);
 
         if (config.GLOBAL_CHAT_PASSTHROUGH)
-            sendMessage(msg, currentServer.get().getServer());
-        else
             sendMessage(msg);
+        else
+            sendMessage(msg, currentServer.get().getServer());
 
         if (config.GLOBAL_CHAT_TO_CONSOLE)
             this.logger.info("GLOBAL: <{}> {}", player, message);
@@ -74,7 +74,7 @@ public class GlobalChat {
         /*
         broken >=1.19.1
 
-        if (!config.GLOBAL_CHAT_PASSTHROUGH)
+        if (config.GLOBAL_CHAT_PASSTHROUGH)
             event.setResult(ChatResult.denied());
          */
     }
@@ -98,11 +98,6 @@ public class GlobalChat {
                 new ChatTemplate("server", server, false),
                 new ChatTemplate("previous_server", previousServer.get().getServerInfo().getName(), false)
             ));
-
-            if (config.GLOBAL_CHAT_PASSTHROUGH) {
-                sendMessage(msg, currentServer);
-                return;
-            }
         } else {
             if (!config.JOIN_ENABLE)
                 return;
@@ -111,6 +106,11 @@ public class GlobalChat {
                 new ChatTemplate("player", player, false),
                 new ChatTemplate("server", server, false)
             ));
+
+            if (!config.GLOBAL_CHAT_PASSTHROUGH) {
+                sendMessage(msg, currentServer);
+                return;
+            }
         }
 
         sendMessage(msg);
@@ -134,9 +134,9 @@ public class GlobalChat {
         ));
 
         if (config.GLOBAL_CHAT_PASSTHROUGH)
-            sendMessage(msg, currentServer.get().getServer());
-        else
             sendMessage(msg);
+        else
+            sendMessage(msg, currentServer.get().getServer());
     }
 
     private Component parseMessage(String input, List<ChatTemplate> templates) {
