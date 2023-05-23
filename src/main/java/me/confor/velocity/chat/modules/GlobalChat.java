@@ -65,7 +65,7 @@ public class GlobalChat {
             msg = msg.replaceText(config.urlReplacement);
 
         if (config.GLOBAL_CHAT_PASSTHROUGH)
-            sendMessage(msg,currentServer.get().getServer());
+            sendMessage(msg, currentServer.get().getServer());
         else
             sendMessage(msg);
 
@@ -96,10 +96,10 @@ public class GlobalChat {
                 new ChatTemplate("previous_server", previousServer.toString(), false)
             ));
 
-            if (config.GLOBAL_CHAT_PASSTHROUGH)
-                sendMessage(msg,currentServer);
-            else
-                sendMessage(msg);
+            if (config.GLOBAL_CHAT_PASSTHROUGH) {
+                sendMessage(msg, currentServer);
+                return;
+            }
         } else {
             if (!config.JOIN_ENABLE)
                 return;
@@ -108,9 +108,9 @@ public class GlobalChat {
                 new ChatTemplate("player", player, false),
                 new ChatTemplate("server", server, false)
             ));
-
-            sendMessage(msg);
         }
+
+        sendMessage(msg);
     }
 
     @Subscribe
@@ -131,7 +131,7 @@ public class GlobalChat {
         ));
 
         if (config.GLOBAL_CHAT_PASSTHROUGH)
-            sendMessage(msg,currentServer.get().getServer());
+            sendMessage(msg, currentServer.get().getServer());
         else
             sendMessage(msg);
     }
