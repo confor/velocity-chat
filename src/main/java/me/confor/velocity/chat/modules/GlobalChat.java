@@ -4,7 +4,6 @@ import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
-import com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyReloadEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -72,8 +71,12 @@ public class GlobalChat {
         if (config.GLOBAL_CHAT_TO_CONSOLE)
             this.logger.info("GLOBAL: <{}> {}", player, message);
 
+        /*
+        broken >=1.19.1
+
         if (!config.GLOBAL_CHAT_PASSTHROUGH)
             event.setResult(ChatResult.denied());
+         */
     }
 
     @Subscribe
