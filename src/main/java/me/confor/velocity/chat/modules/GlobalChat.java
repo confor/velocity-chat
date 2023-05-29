@@ -6,6 +6,7 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyReloadEvent;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -64,19 +65,14 @@ public class GlobalChat {
             msg = msg.replaceText(config.urlReplacement);
 
         if (config.GLOBAL_CHAT_PASSTHROUGH)
-            sendMessage(msg);
-        else
             sendMessage(msg, currentServer.get().getServer());
+        else {
+            sendMessage(msg);
+            event.setResult(PlayerChatEvent.ChatResult.denied());
+        }
 
         if (config.GLOBAL_CHAT_TO_CONSOLE)
             this.logger.info("GLOBAL: <{}> {}", player, message);
-
-        /*
-        broken >=1.19.1
-
-        if (config.GLOBAL_CHAT_PASSTHROUGH)
-            event.setResult(ChatResult.denied());
-         */
     }
 
     @Subscribe
@@ -87,33 +83,28 @@ public class GlobalChat {
         String player = event.getPlayer().getUsername();
         String server = currentServer.getServerInfo().getName();
 
-        Component msg;
-
         if (previousServer.isPresent()) {
             if (!config.SWITCH_ENABLE)
                 return;
 
-            msg = parseMessage(config.SWITCH_FORMAT, List.of(
+            Component msg = parseMessage(config.SWITCH_FORMAT, List.of(
                 new ChatTemplate("player", player, false),
                 new ChatTemplate("server", server, false),
                 new ChatTemplate("previous_server", previousServer.get().getServerInfo().getName(), false)
             ));
+
+            sendMessage(msg);
         } else {
             if (!config.JOIN_ENABLE)
                 return;
 
-            msg = parseMessage(config.JOIN_FORMAT, List.of(
+            Component msg = parseMessage(config.JOIN_FORMAT, List.of(
                 new ChatTemplate("player", player, false),
                 new ChatTemplate("server", server, false)
             ));
 
-            if (!config.GLOBAL_CHAT_PASSTHROUGH) {
-                sendMessage(msg, currentServer);
-                return;
-            }
+            sendMessage(msg);
         }
-
-        sendMessage(msg);
     }
 
     @Subscribe
@@ -123,6 +114,7 @@ public class GlobalChat {
 
         Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer();
         if (currentServer.isEmpty())
+            // TODO: we should find a way to recover and still send a generic disconnect message even if the current server is unknown
             return;
 
         String player = event.getPlayer().getUsername();
@@ -133,10 +125,7 @@ public class GlobalChat {
                 new ChatTemplate("server", server, false)
         ));
 
-        if (config.GLOBAL_CHAT_PASSTHROUGH)
-            sendMessage(msg);
-        else
-            sendMessage(msg, currentServer.get().getServer());
+        sendMessage(msg);
     }
 
     private Component parseMessage(String input, List<ChatTemplate> templates) {
@@ -153,8 +142,8 @@ public class GlobalChat {
     }
 
     private void sendMessage(Component msg) {
-        for (RegisteredServer server : this.server.getAllServers())
-            server.sendMessage(msg);
+        for (Player player : this.server.getAllPlayers())
+            player.sendMessage(msg);
     }
 
     private void sendMessage(Component msg, RegisteredServer currentServer) {
