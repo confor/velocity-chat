@@ -112,7 +112,7 @@ public class GlobalChat {
 
     @Subscribe
     public void onDisconnect(DisconnectEvent event) {
-        if (!config.QUIT_ENABLE)
+        if (!config.LEAVE_ENABLE)
             return;
 
         Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer();
@@ -123,12 +123,12 @@ public class GlobalChat {
         String player = event.getPlayer().getUsername();
         String server = currentServer.get().getServerInfo().getName();
 
-        Component msg = parseMessage(config.QUIT_FORMAT, List.of(
+        Component msg = parseMessage(config.LEAVE_FORMAT, List.of(
                 new ChatTemplate("player", player, false),
                 new ChatTemplate("server", server, false)
         ));
 
-        if (!config.QUIT_PASSTHROUGH)
+        if (!config.LEAVE_PASSTHROUGH)
             sendMessage(msg, currentServer.get().getServer());
         else
             sendMessage(msg);

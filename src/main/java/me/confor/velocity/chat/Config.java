@@ -36,9 +36,9 @@ public class Config {
     public boolean JOIN_PASSTHROUGH;
     public String JOIN_FORMAT;
 
-    public boolean QUIT_ENABLE;
-    public boolean QUIT_PASSTHROUGH;
-    public String QUIT_FORMAT;
+    public boolean LEAVE_ENABLE;
+    public boolean LEAVE_PASSTHROUGH;
+    public String LEAVE_FORMAT;
 
     public boolean SWITCH_ENABLE;
     public String SWITCH_FORMAT;
@@ -96,9 +96,9 @@ public class Config {
         this.JOIN_PASSTHROUGH = this.toml.getBoolean("join.passthrough", false);
         this.JOIN_FORMAT = this.toml.getString("join.format", "<yellow><player> joined <server></yellow>");
 
-        this.QUIT_ENABLE = this.toml.getBoolean("quit.enable", false);
-        this.QUIT_PASSTHROUGH = this.toml.getBoolean("join.passthrough", false);
-        this.QUIT_FORMAT = this.toml.getString("quit.format", "<yellow><player> disconnected from <server></yellow>");
+        this.LEAVE_ENABLE = this.toml.getBoolean("leave.enable", false);
+        this.LEAVE_PASSTHROUGH = this.toml.getBoolean("leave.passthrough", false);
+        this.LEAVE_FORMAT = this.toml.getString("leave.format", "<yellow><player> left <server></yellow>");
 
         this.SWITCH_ENABLE = this.toml.getBoolean("switch.enable", true);
         this.SWITCH_FORMAT = this.toml.getString("switch.format", "<yellow><player> switched from <previous_server> to <server></yellow>");

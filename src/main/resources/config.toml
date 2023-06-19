@@ -31,20 +31,20 @@ clickable = true
 pattern = "https?:\\/\\/\\S+"
 
 [join]
-# send a chat message when a player connects to the proxy?
+# send a chat message when a player joins the proxy?
 enable = true
 # send that chat message to the server the player is joining?
-# useful for servers that don't already have a join message (via mod / plugin)
+# useful for servers that the default join message disabled (via mod / plugin)
 passthrough = false
 format = "<yellow><player> joined <server></yellow>"
 
-[quit]
-# send a chat message when a player disconnects from the proxy?
+[leave]
+# send a chat message when a player leaves the proxy?
 enable = true
-# send that chat message to the server the player is disconnecting from?
-# useful for servers that don't already have a disconnect message (via mod / plugin)
+# send that chat message to the server the player is leaving?
+# useful for servers that have the default leave message disabled (via mod / plugin)
 passthrough = false
-format = "<yellow><player> disconnected from <server></yellow>"
+format = "<yellow><player> left <server></yellow>"
 
 [switch]
 # send a chat message when a player switches to a different server?
