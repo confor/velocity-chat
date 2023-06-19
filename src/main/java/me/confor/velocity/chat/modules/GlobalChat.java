@@ -146,9 +146,9 @@ public class GlobalChat {
             player.sendMessage(msg);
     }
 
-    private void sendMessage(Component msg, RegisteredServer currentServer) {
+    private void sendMessage(Component msg, RegisteredServer excludedServer) {
         for (RegisteredServer server : this.server.getAllServers())
-            if (server != currentServer) {
+            if (server != excludedServer) {
                 server.sendMessage(msg);
             }
     }
