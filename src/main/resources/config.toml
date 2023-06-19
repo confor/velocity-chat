@@ -34,7 +34,7 @@ pattern = "https?:\\/\\/\\S+"
 # send a chat message when a player joins the proxy?
 enable = true
 # send that chat message to the server the player is joining?
-# useful for servers that the default join message disabled (via mod / plugin)
+# useful for servers that have the default join message disabled (via mod / plugin)
 passthrough = false
 format = "<yellow><player> joined <server></yellow>"
 
