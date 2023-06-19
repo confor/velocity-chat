@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.util.regex.Pattern;
 
 public class Config {
-    static final long CONFIG_VERSION = 5;
+    static final long CONFIG_VERSION = 6;
 
     Path dataDir;
     Toml toml;
