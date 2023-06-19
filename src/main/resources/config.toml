@@ -7,15 +7,12 @@ enable = true
 # should the chat messages be echoed to velocity's console?
 log_to_console = false
 
-# should global chat messages (with the formatting below)
-#   be sent to all players, regardless of minecraft server?
-# if enabled, both the original message and the message
-#   sent globally will appear on the minecraft server
-#   that the message originates from.
-# if disabled, the origin minecraft server will only see
-#   the original message.
-# players on other minecraft servers will always only see
-#   the global message.
+# should global chat messages (with the formatting below) be sent to all players, regardless of minecraft server?
+# if enabled, the original chat message will be formatted as below, and sent to all players.
+# however, this will prevent the target server from receiving the message, which may break a few mods (see: Botania's "Corporea Index")
+# if disabled, the target server will only see the original message.
+# players on other minecraft servers will always only see the global message.
+# NOTE: enabling this will kick players on >=1.19.1 servers when a chat message is sent; a plugin can be used to solve this - i.e. https://modrinth.com/plugin/unsignedvelocity
 passthrough = false
 
 # should global chat messages be parsed through minimessage?
@@ -39,12 +36,12 @@ enable = false
 format = "<yellow><player> joined <server></yellow>"
 
 [quit]
-# send a chat message when a player disconnects?
+# send a chat message when a player disconnects from the proxy?
 enable = true
 format = "<yellow><player> disconnected from <server></yellow>"
 
 [switch]
-# send a chat message when a player switches to a different minecraft server?
+# send a chat message when a player switches to a different server?
 # (e.g. via "/server <server>")
 enable = true
 format = "<yellow><player> switched from <previous_server> to <server></yellow>"
