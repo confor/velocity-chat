@@ -43,6 +43,9 @@ public class Config {
     public boolean SWITCH_ENABLE;
     public String SWITCH_FORMAT;
 
+    public boolean DISCONNECT_ENABLE;
+    public String DISCONNECT_FORMAT;
+
     @Inject
     public Config(@DataDirectory Path dataDir) {
         this.dataDir = dataDir;
@@ -102,5 +105,8 @@ public class Config {
 
         this.SWITCH_ENABLE = this.toml.getBoolean("switch.enable", true);
         this.SWITCH_FORMAT = this.toml.getString("switch.format", "<yellow><player> switched from <previous_server> to <server></yellow>");
+
+        this.DISCONNECT_ENABLE = this.toml.getBoolean("disconnect.enable", true);
+        this.DISCONNECT_FORMAT = this.toml.getString("disconnect.format", "<yellow><player> was disconnected</yellow>");
     }
 }

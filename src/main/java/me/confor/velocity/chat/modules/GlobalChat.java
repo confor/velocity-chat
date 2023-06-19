@@ -115,12 +115,19 @@ public class GlobalChat {
         if (!config.LEAVE_ENABLE)
             return;
 
-        Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer();
-        if (currentServer.isEmpty())
-            // TODO: we should find a way to recover and still send a generic disconnect message even if the current server is unknown
-            return;
-
         String player = event.getPlayer().getUsername();
+        Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer();
+
+        if (currentServer.isEmpty() && config.DISCONNECT_ENABLE) {
+            Component msg = parseMessage(config.DISCONNECT_FORMAT, List.of(
+                    new ChatTemplate("player", player, false)
+            ));
+
+            sendMessage(msg);
+
+            return;
+        }
+
         String server = currentServer.get().getServerInfo().getName();
 
         Component msg = parseMessage(config.LEAVE_FORMAT, List.of(

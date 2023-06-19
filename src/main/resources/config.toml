@@ -51,3 +51,9 @@ format = "<yellow><player> left <server></yellow>"
 # (e.g. via "/server <server>")
 enable = true
 format = "<yellow><player> switched from <previous_server> to <server></yellow>"
+
+[disconnect]
+# send a chat message when a player is forcibly disconnected from the proxy?
+# (e.g. due to timing out, having an incompatible client, or some other error)
+enable = true
+format = "<yellow><player> was disconnected</yellow>"
