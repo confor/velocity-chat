@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.util.regex.Pattern;
 
 public class Config {
-    static final long CONFIG_VERSION = 4;
+    static final long CONFIG_VERSION = 5;
 
     Path dataDir;
     Toml toml;
@@ -33,9 +33,11 @@ public class Config {
     public TextReplacementConfig urlReplacement;
 
     public boolean JOIN_ENABLE;
+    public boolean JOIN_PASSTHROUGH;
     public String JOIN_FORMAT;
 
     public boolean QUIT_ENABLE;
+    public boolean QUIT_PASSTHROUGH;
     public String QUIT_FORMAT;
 
     public boolean SWITCH_ENABLE;
@@ -91,12 +93,14 @@ public class Config {
         this.URLS_PATTERN = this.toml.getString("urls.pattern", "https?:\\/\\/\\S+");
 
         this.JOIN_ENABLE = this.toml.getBoolean("join.enable", false);
+        this.JOIN_PASSTHROUGH = this.toml.getBoolean("join.passthrough", false);
         this.JOIN_FORMAT = this.toml.getString("join.format", "<yellow><player> joined <server></yellow>");
 
-        this.QUIT_ENABLE = this.toml.getBoolean("quit.enable", true);
+        this.QUIT_ENABLE = this.toml.getBoolean("quit.enable", false);
+        this.QUIT_PASSTHROUGH = this.toml.getBoolean("join.passthrough", false);
         this.QUIT_FORMAT = this.toml.getString("quit.format", "<yellow><player> disconnected from <server></yellow>");
 
         this.SWITCH_ENABLE = this.toml.getBoolean("switch.enable", true);
-        this.SWITCH_FORMAT = this.toml.getString("switch.format", "<yellow><player> moved from <previous_server> to <server></yellow>");
+        this.SWITCH_FORMAT = this.toml.getString("switch.format", "<yellow><player> switched from <previous_server> to <server></yellow>");
     }
 }

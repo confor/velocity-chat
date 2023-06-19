@@ -9,10 +9,11 @@ log_to_console = false
 
 # should global chat messages (with the formatting below) be sent to all players, regardless of minecraft server?
 # if enabled, the original chat message will be formatted as below, and sent to all players.
-# however, this will prevent the target server from receiving the message, which may break a few mods (see: Botania's "Corporea Index")
+# however, this will prevent the target server from receiving the unmodified message, which may break a few mods (see: Botania's "Corporea Index")
 # if disabled, the target server will only see the original message.
 # players on other minecraft servers will always only see the global message.
-# NOTE: enabling this will kick players on >=1.19.1 servers when a chat message is sent; a plugin can be used to solve this - i.e. https://modrinth.com/plugin/unsignedvelocity
+# NOTE: enabling this will kick players on >=1.19.1 servers when a chat message is sent.
+#       a plugin can be used to solve this - i.e. https://modrinth.com/plugin/unsignedvelocity
 passthrough = false
 
 # should global chat messages be parsed through minimessage?
@@ -31,13 +32,18 @@ pattern = "https?:\\/\\/\\S+"
 
 [join]
 # send a chat message when a player connects to the proxy?
-# useful for servers that already don't have a join message (via mod / plugin)
-enable = false
+enable = true
+# send that chat message to the server the player is joining?
+# useful for servers that don't already have a join message (via mod / plugin)
+passthrough = false
 format = "<yellow><player> joined <server></yellow>"
 
 [quit]
 # send a chat message when a player disconnects from the proxy?
 enable = true
+# send that chat message to the server the player is disconnecting from?
+# useful for servers that don't already have a disconnect message (via mod / plugin)
+passthrough = false
 format = "<yellow><player> disconnected from <server></yellow>"
 
 [switch]
