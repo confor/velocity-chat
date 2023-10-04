@@ -3,11 +3,10 @@ package me.confor.velocity.chat.modules;
 import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
-import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
-import com.velocitypowered.api.event.player.PlayerChatEvent.ChatResult;
+import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyReloadEvent;
-import com.velocitypowered.api.event.player.ServerPostConnectEvent;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -65,74 +64,79 @@ public class GlobalChat {
         if (config.URLS_CLICKABLE)
             msg = msg.replaceText(config.urlReplacement);
 
-        if (config.GLOBAL_CHAT_PASSTHROUGH)
-            sendMessage(msg,currentServer.get().getServer());
-        else
+        if (!config.GLOBAL_CHAT_PASSTHROUGH) {
+            sendMessage(msg, currentServer.get().getServer());
+        } else {
             sendMessage(msg);
+            event.setResult(PlayerChatEvent.ChatResult.denied());
+        }
 
         if (config.GLOBAL_CHAT_TO_CONSOLE)
             this.logger.info("GLOBAL: <{}> {}", player, message);
-
-        if (!config.GLOBAL_CHAT_PASSTHROUGH)
-            event.setResult(ChatResult.denied());
     }
 
     @Subscribe
-    public void onConnect(LoginEvent event) {
-        if (!config.JOIN_ENABLE)
-            return;
+    public void onConnect(ServerConnectedEvent event) {
+        RegisteredServer currentServer = event.getServer();
+        Optional<RegisteredServer> previousServer = event.getPreviousServer();
 
         String player = event.getPlayer().getUsername();
+        String server = currentServer.getServerInfo().getName();
 
-        Component msg = parseMessage(config.JOIN_FORMAT, List.of(
-                new ChatTemplate("player", player, false)
-        ));
+        if (previousServer.isPresent()) {
+            if (!config.SWITCH_ENABLE)
+                return;
 
-        sendMessage(msg);
+            Component msg = parseMessage(config.SWITCH_FORMAT, List.of(
+                new ChatTemplate("player", player, false),
+                new ChatTemplate("server", server, false),
+                new ChatTemplate("previous_server", previousServer.get().getServerInfo().getName(), false)
+            ));
+
+            sendMessage(msg);
+        } else {
+            if (!config.JOIN_ENABLE)
+                return;
+
+            Component msg = parseMessage(config.JOIN_FORMAT, List.of(
+                new ChatTemplate("player", player, false),
+                new ChatTemplate("server", server, false)
+            ));
+
+            if (!config.JOIN_PASSTHROUGH)
+                sendMessage(msg, currentServer);
+            else
+                sendMessage(msg);
+        }
     }
 
     @Subscribe
     public void onDisconnect(DisconnectEvent event) {
-        if (!config.QUIT_ENABLE)
-            return;
-
-        Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer();
-        if (currentServer.isEmpty())
+        if (!config.LEAVE_ENABLE)
             return;
 
         String player = event.getPlayer().getUsername();
-        String server = currentServer.get().getServerInfo().getName();
+        Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer();
 
-        Component msg = parseMessage(config.QUIT_FORMAT, List.of(
-                new ChatTemplate("player", player, false),
-                new ChatTemplate("server", server, false)
-        ));
+        if (currentServer.isEmpty() && config.DISCONNECT_ENABLE) {
+            Component msg = parseMessage(config.DISCONNECT_FORMAT, List.of(
+                    new ChatTemplate("player", player, false)
+            ));
 
-        if (config.GLOBAL_CHAT_PASSTHROUGH)
-            sendMessage(msg,currentServer.get().getServer());
-        else
             sendMessage(msg);
-    }
 
-    @Subscribe
-    public void onServerConnect(ServerPostConnectEvent event) {
-        if (!config.SWITCH_ENABLE)
             return;
+        }
 
-        Optional<ServerConnection> currentServer = event.getPlayer().getCurrentServer();
-        if (currentServer.isEmpty())
-            return;
-
-        String player = event.getPlayer().getUsername();
         String server = currentServer.get().getServerInfo().getName();
 
-        Component msg = parseMessage(config.SWITCH_FORMAT, List.of(
+        Component msg = parseMessage(config.LEAVE_FORMAT, List.of(
                 new ChatTemplate("player", player, false),
                 new ChatTemplate("server", server, false)
         ));
 
-        if (config.GLOBAL_CHAT_PASSTHROUGH)
-            sendMessage(msg,currentServer.get().getServer());
+        if (!config.LEAVE_PASSTHROUGH)
+            sendMessage(msg, currentServer.get().getServer());
         else
             sendMessage(msg);
     }
@@ -151,13 +155,13 @@ public class GlobalChat {
     }
 
     private void sendMessage(Component msg) {
-        for (RegisteredServer server : this.server.getAllServers())
-            server.sendMessage(msg);
+        for (Player player : this.server.getAllPlayers())
+            player.sendMessage(msg);
     }
 
-    private void sendMessage(Component msg, RegisteredServer currentServer) {
+    private void sendMessage(Component msg, RegisteredServer excludedServer) {
         for (RegisteredServer server : this.server.getAllServers())
-            if (server != currentServer) {
+            if (server != excludedServer) {
                 server.sendMessage(msg);
             }
     }

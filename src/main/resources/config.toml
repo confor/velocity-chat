@@ -1,4 +1,4 @@
-config_version = 4
+config_version = 6
 
 [chat]
 # enable global chat?
@@ -7,35 +7,53 @@ enable = true
 # should the chat messages be echoed to velocity's console?
 log_to_console = false
 
-# should chat messages be passed through to the minecraft server?
-# if enabled, it will show duplicate messages in the senders chat
-passthrough = true
+# should global chat messages (with the formatting below) be sent to all players, regardless of minecraft server?
+# if enabled, the original chat message will be formatted as below, and sent to all players.
+# however, this will prevent the target server from receiving the unmodified message, which may break a few mods (see: Botania's "Corporea Index")
+# if disabled, the target server will only see the original message.
+# players on other minecraft servers will always only see the global message.
+# NOTE: enabling this will kick players on >=1.19.1 servers when a chat message is sent.
+#       a plugin can be used to solve this - i.e. https://modrinth.com/plugin/unsignedvelocity
+passthrough = false
 
-# should chat messages be parsed through minimessage?
-# player will be able to use styles such as <rainbow>hello</rainbow> in their messages
+# should global chat messages be parsed through minimessage?
+# players will be able to use styles such as <rainbow>hello</rainbow> in their messages
 parse_player_messages = false
 
-# global chat format, you can use minimessage tags here.
+# global chat format, you can use minimessage tags here
 format = "<<player>> <message>"
 
 [urls]
-# should urls typed in chat be clickable?
+# should urls in global chat be clickable?
 clickable = true
 # the regular expression used to determine whether something is a url
-# test using https://regex101.com/ set to Java 8 and only the "g" (global) flag
+# test using https://regex101.com/ - set to Java 8 and enable only the "g" (global) flag
 pattern = "https?:\\/\\/\\S+"
 
 [join]
-# send a chat message when a player connects to velocity? Useful for fabric servers which dont already have a Join message.
-enable = false
-format = "<yellow><player> joined the game</yellow>"
-
-[quit]
-# send a chat message when a player disconnects?
+# send a chat message when a player joins the proxy?
 enable = true
-format = "<yellow><player> disconnected from <server></yellow>"
+# send that chat message to the server the player is joining?
+# useful for servers that have the default join message disabled (via mod / plugin)
+passthrough = false
+format = "<yellow><player> joined <server></yellow>"
+
+[leave]
+# send a chat message when a player leaves the proxy?
+enable = true
+# send that chat message to the server the player is leaving?
+# useful for servers that have the default leave message disabled (via mod / plugin)
+passthrough = false
+format = "<yellow><player> left <server></yellow>"
 
 [switch]
-# send a chat message when a player connects to a minecraft server?
+# send a chat message when a player switches to a different server?
+# (e.g. via "/server <server>")
 enable = true
-format = "<yellow><player> connected to <server></yellow>"
+format = "<yellow><player> switched from <previous_server> to <server></yellow>"
+
+[disconnect]
+# send a chat message when a player is forcibly disconnected from the proxy?
+# (e.g. due to timing out, having an incompatible client, or some other error)
+enable = true
+format = "<yellow><player> was disconnected</yellow>"

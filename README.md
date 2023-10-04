@@ -7,7 +7,7 @@ I was disappointed with the current options so I made my own plugin. I hope its 
 - **Global chat**: your player's voice is echoed across your whole velocity network
 - **Log to console**: the chat can be sent to your console (configurable, can be disabled)
 - **Configurable format**: chat format can be changed or formatted using MiniMessage tags (or translated!)
-- **Global join/quit messages**: let your whole network know when a player joins or quits the velocity proxy (goes well with [HidePlayerJoinQuit](https://github.com/OskarZyg/HidePlayerJoinQuit/releases) or [SilentJoin](https://www.spigotmc.org/resources/silentjoin.34967/))
+- **Global join/leave messages**: let your whole network know when a player joins or leaves the velocity proxy (goes well with [HidePlayerJoinQuit](https://github.com/OskarZyg/HidePlayerJoinQuit/releases) or [SilentJoin](https://www.spigotmc.org/resources/silentjoin.34967/))
 - **Server switch messages**
 
 ## Installation
